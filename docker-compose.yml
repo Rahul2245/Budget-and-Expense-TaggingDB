@@ -1,0 +1,45 @@
+services:
+
+  # --- 1. The Database Service ---
+  db:
+    image: mysql:8.0
+    container_name: budget_mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Rahul@123         # Matches your .env
+      MYSQL_DATABASE: BudgetAndExpense       # Matches your .env
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # --- 2. The Backend Service ---
+  backend:
+    build: 
+      context: ./budget_backend_2
+    container_name: budget_backend
+    ports:
+      - "5000:5000"
+    environment: # <-- ADD THIS BLOCK INSTEAD OF env_file
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=Rahul@123
+      - DB_DATABASE=BudgetAndExpense
+      - DB_PORT=3306
+      - PORT=5000
+    depends_on:
+      - db   # Added this so backend waits for the database!
+
+  # --- 3. The Frontend Service ---
+  frontend:
+    build: 
+      context: ./budget_frontend
+    container_name: budget_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+# --- 4. Define the Volume (THIS WAS MISSING!) ---
+volumes:
+  db_data:

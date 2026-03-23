@@ -9,7 +9,7 @@ router.use(requireAuth);
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
 
-  let connection;
+  let connection;       
 
   try {
     connection = await pool.getConnection();
